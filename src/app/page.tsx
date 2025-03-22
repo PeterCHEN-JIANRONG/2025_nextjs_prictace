@@ -1,40 +1,57 @@
 "use client";
-import { createContext, ReactNode, useContext, useEffect, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import axios from "axios";
 import type { User } from "./types/user";
 import UserCard from "./components/UserCard";
 
-
 export default function Home() {
-  const [list, setList] = useState<User[]>([])
+  const [list, setList] = useState<number[]>([1,2,3,4,5]);
+  const list2 = useMemo(() => list.map((i) => i*2), [list])
 
-  const getUser = async () => {
-    try {
+  const inputRef = useRef<HTMLInputElement>(null)
 
-      const params = {
-        results: 4,
-        nat: 'us,dk,fr,gb'
-      }
-      const { data } = await axios('https://randomuser.me/api/',{params})
-      console.log(data);
-      setList(data.results)
-    } catch (error) {
-      console.log(error);
-    }
+  const [text, setText] = useState('')
+  const handleChange = (e) => {
+    const {value, name} = e.target
+    setText(value)
   }
 
-  const userList = list.map((user) => <li key={user.email}>
-      <UserCard data={user} />
-    </li>)
+  const add = () => {
+    const num = parseInt(text)
+    console.log(num, typeof num);
+    
+    if (num < 0 || num > 100) {
+      console.log('number must between 0 <= num <= 100');
+      
+      setText('')
+      focus()
+      return
+    }
+    setList([
+      ...list,
+      num
+    ])
+    setText('')
+    focus()
+  }
+  
+  const focus = () => {
+    inputRef.current && inputRef.current.focus()
+  }
 
-  useEffect(() => {
-    getUser()
-  },[])
-
-  return (<>
-    <h1>人物列表</h1>
-    <ul className="space-y-2">
-      {userList}
-    </ul>
-  </>)
+  const handleKeyDown = (e) => {
+    const {code} = e
+    if (code === 'Enter') {
+      add()
+    }
+    
+  }
+  return (
+    <>
+      <input type="text" name="number" value={text} onChange={handleChange} ref={inputRef} onKeyDown={handleKeyDown}/>
+      <button type="button" onClick={add}>增加</button>
+      <p>{list.join(",")}</p>
+      <p>{list2.join(",")}</p>
+    </>
+  );
 }
