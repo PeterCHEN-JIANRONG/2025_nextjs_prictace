@@ -5,49 +5,55 @@ import type { User } from "./types/user";
 import UserCard from "./components/UserCard";
 import { ThemeContext } from "./contexts/all";
 import classNames from "classnames";
+import { useReducer } from 'react';
 
-const MyCard1 = () => {
-  const theme = useContext(ThemeContext);
-  return <>
-    <div className={classNames('p-2 w-[200px]',{
-      'bg-black text-white': theme === 'dark',
-      'bg-white text-black': theme === 'light',
-    })}>
-      MyCard1: {theme}
-    </div>
-  </>
+interface Obj {
+  age: number
 }
 
-const MyCard2 = () => {
-  const theme = useContext(ThemeContext);
-  return <>
-    <div className={classNames('p-2 w-[200px]',{
-      'bg-black text-white': theme === 'dark',
-      'bg-white text-black': theme === 'light',
-    })}>
-      MyCard2: {theme}
-    </div>
-  </>
+interface AddAction {
+  type: string
 }
 
-export default function Home() {
-
-  const [theme, setTheme] = useState('dark');
-  const changeTheme = () => {
-    if (theme === 'dark') {
-      setTheme('light')
-      return
-    }
-
-    setTheme('dark')
+function reducer(state: Obj, action:AddAction) {
+  if (action.type === 'incremented_age') {
+    return {
+      age: state.age + 1
+    };
   }
+  if (action.type === 'decremented_age') {
+    return {
+      age: state.age - 1
+    };
+  }
+  // throw Error('Unknown action.');
+  console.log('Unknown action.')
+  return state
+}
+
+export default function Counter() {
+  const [state, dispatch] = useReducer(reducer, { age: 42 });
+
   return (
     <>
-      <button type="button" onClick={changeTheme}>改變主題</button>
-      <ThemeContext.Provider value={theme}>
-        <MyCard1 />
-        <MyCard2 />
-      </ThemeContext.Provider>
+    <div className="space-x-2">
+      <button onClick={() => {
+        dispatch({ type: 'incremented_age' })
+      }}>
+        Increment
+      </button>
+      <button onClick={() => {
+        dispatch({ type: 'decremented_age' })
+      }}>
+        Decrement
+      </button>
+      <button onClick={() => {
+        dispatch({ type: 'test' })
+      }}>
+        test
+      </button>
+    </div>
+      <p>Hello! You are {state.age}.</p>
     </>
   );
 }
