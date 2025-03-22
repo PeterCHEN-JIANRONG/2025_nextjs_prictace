@@ -1,59 +1,67 @@
 "use client";
-import { useContext, useMemo, useRef, useState } from "react";
-import axios from "axios";
-import type { User } from "./types/user";
-import UserCard from "./components/UserCard";
-import { ThemeContext } from "./contexts/all";
-import classNames from "classnames";
-import { useReducer } from 'react';
 
-interface Obj {
-  age: number
+import { useReducer, useRef, useState } from "react";
+
+
+interface Counter {
+  count: number
 }
 
-interface AddAction {
-  type: string
+interface CounterAction {
+  type: 'add' | 'reduce',
+  number: number
 }
 
-function reducer(state: Obj, action:AddAction) {
-  if (action.type === 'incremented_age') {
+const reducer = (state: Counter, action: CounterAction) => {
+  const {type, number} = action
+  console.log(action)
+  if (type === 'add') {
     return {
-      age: state.age + 1
-    };
+      count: state.count + number
+    }
   }
-  if (action.type === 'decremented_age') {
+  if (type === 'reduce') {
     return {
-      age: state.age - 1
-    };
+      count: state.count - number
+    }
   }
-  // throw Error('Unknown action.');
-  console.log('Unknown action.')
-  return state
+
+  throw Error('Unknown action.');
 }
 
 export default function Counter() {
-  const [state, dispatch] = useReducer(reducer, { age: 42 });
+
+  const change = (e: {target: HTMLInputElement}) => {
+    const {value} = e.target
+    setNumber(parseInt(value) || 0)
+  }
+
+  const [number, setNumber] = useState<number>(0)
+  const [counter, dispatch] = useReducer(reducer, {count: 0})
+  const add = () => {
+    dispatch({type: 'add', number})
+    setNumber(0)
+    focus()
+  }
+  const reduce = () => {
+    dispatch({type: 'reduce', number})
+    setNumber(0)
+    focus()
+  }
+
+  const inputRef = useRef<HTMLInputElement>(null)
+  const focus = () => {
+    inputRef.current && inputRef.current.focus()
+  }
 
   return (
     <>
-    <div className="space-x-2">
-      <button onClick={() => {
-        dispatch({ type: 'incremented_age' })
-      }}>
-        Increment
-      </button>
-      <button onClick={() => {
-        dispatch({ type: 'decremented_age' })
-      }}>
-        Decrement
-      </button>
-      <button onClick={() => {
-        dispatch({ type: 'test' })
-      }}>
-        test
-      </button>
-    </div>
-      <p>Hello! You are {state.age}.</p>
+      <p className="text-3xl font-bold">{counter.count}</p>
+      <div>
+        <input type="text" name="count" id="count" value={number} onChange={change} ref={inputRef} />
+        <button type="button" onClick={add}>增加</button>
+        <button type="button" onClick={reduce}>減少</button>
+      </div>
     </>
   );
 }
