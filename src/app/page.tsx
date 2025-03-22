@@ -4,55 +4,29 @@ import { createContext, ReactNode, useContext, useState } from "react";
 export default function Home() {
   // const [count, setCount] = useState(0)
 
-  interface User {
-    name: string
-    age: number
-  }
-  
-  const ThemeContext = createContext<User>({
-    name: 'peter',
-    age: 20
-  });
-
-  const Header = (props: any) => {
-    const {name, age} = useContext(ThemeContext);
-    const click = () => {
-      props.set({
-        name: 'ho',
-        age: 30
-      })
+  const list = [
+    {
+      name: 'peter',
+      age: 20
+    },
+    {
+      name: 'john',
+      age: 25
     }
-    return <div>
-      我是 Header
-      <p>{name} ---- {age}</p>
-      <button type="button" onClick={click}>按我</button>
-    </div>
-  }
-  const Content = (props:any) => {
-    const {name, age} = useContext(ThemeContext);
-    const click = () => {
-      props.set({
-        name: 'bubu',
-        age: 40
-      })
-    }
-    return <div>
-      我是 Content
-      <p>{age} === {name}</p>
-      <button type="button" onClick={click}>按我</button>
-    </div>
-  }
+  ]
 
-  const [user, setUser] = useState<User>({
-    name: '',
-    age: 0
-  })
+  const say = (str: string) => {
+    console.log(`ih, my name is ${str}`);
+  }
 
   return (<>
-    
-    <ThemeContext.Provider value={user}>
-      <Header set={setUser}/>
-      <Content set={setUser}/>
-    </ThemeContext.Provider>
+  <ul>
+    {
+      list.map((i)=><li key={i.age}>
+        {i.name}
+        <button type="button" onClick={() => say(i.name)} className="ml-4 p-1 bg-white text-black">sayHi</button>
+      </li>)
+    }
+  </ul>
   </>)
 }
