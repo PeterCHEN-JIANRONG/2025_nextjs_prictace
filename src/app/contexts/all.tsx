@@ -1,3 +1,5 @@
-import { createContext } from "react";
+import { createContext, useContext } from "react";
 
-export const ThemeContext = createContext<string | null>(null);
+export type Theme = "light" | "dark" | "system";
+export const ThemeContext = createContext<Theme>("system");
+export const useGetTheme = () => useContext(ThemeContext);
